@@ -178,6 +178,170 @@ Maggiorando l'ampiezza di ogni singolo sottointervallo con il suo valore massimo
 
 *Nota metodologica: Al fine di superare questo svantaggio e definire funzioni a tratti che siano al contempo stabili (prive dell'effetto Runge) e ad alta regolarità geometrica (prive di spigoli e completamente derivabili nei nodi), si introduce lo spazio delle **funzioni spline**.*
 
+<h1 style="color: red;">Le funzioni spline</h1>
+
+> **Definizione:** Sia $[a,b]$ un intervallo e $x_0, \ldots, x_{m+1}$ una partizione di esso tale che $x_0 = a$ e $x_{m+1} = b$. <br> Si definisce **spline di grado $n$** relativa alla partizione $x_0, \ldots, x_{m+1}$ una funzione $s(x)$ che soddisfa le seguenti due condizioni:
+> 1. Ristretta a ciascun sottointervallo $[x_i, x_{i+1}]$, la funzione coincide con un polinomio $s_i(x)$ di grado al più $n$ (per ogni $i=0, \ldots, m$).
+> 2. La funzione $s$ e tutte le sue derivate fino all'ordine $n-1$ sono continue su tutto l'intervallo $[a,b]$. In gergo matematico: $$s \in C^{n-1}([a,b])$$
+
+- Ristretta al singolo intervallo, la regolarità $C^{n-1}$ è garantita banalmente dal fatto che $s_i(x)$ è un polinomio.
+- Il vero vincolo della seconda condizione è sui **nodi interni** (i punti di "saldatura" tra un polinomio e l'altro). Richiede che i polinomi adiacenti abbiano lo stesso valore e le stesse derivate nel punto in comune:
+  $$s_i^{(k)}(x_{i+1}) = s_{i+1}^{(k)}(x_{i+1}), \quad k=0, \ldots, n-1, \quad i=0, \ldots, m-1$$
+
+### Osservazioni:
+- Le funzioni lineari a tratti viste in precedenza sono un *caso particolare* della definizione di spline con $n = 1$ e si dicono **spline lineari**.
+- Il caso di gran lunga più importante è quello delle **spline cubiche** ($n = 3$). In questo caso, la funzione $s(x)$ è garanzia di un'elevatissima regolarità geometrica: è continua, derivabile e con derivata seconda continua su tutto l'intervallo. Le **condizioni di regolarità** nei nodi diventano:
+  $$s_i(x_{i+1}) = s_{i+1}(x_{i+1}), \quad s_i'(x_{i+1}) = s_{i+1}'(x_{i+1}), \quad s_i''(x_{i+1}) = s_{i+1}''(x_{i+1})$$
+
+---
+
+<h3 style="color: red;">Dimensioni dello spazio (Gradi di libertà)</h3>
+
+Per capire come costruire una spline, dobbiamo prima contare quanti parametri (gradi di libertà) ci servono per descriverla su una partizione di $m+2$ punti.
+
+- Ogni 'pezzo' $s_i(x)$ è un polinomio di grado $n$, quindi possiede $n+1$ coefficienti.
+- Essendoci in totale $m+1$ 'pezzi' di spline, il numero totale di parametri da calcolare è **$(m+1)(n+1)$**.
+- Tuttavia, i pezzi non sono indipendenti! Le condizioni di regolarità impongono che per ogni nodo interno (che sono $m$) debbano coincidere $n$ valori (funzione e $n-1$ derivate). Questo "brucia" $nm$ parametri.
+
+> **Gradi di libertà delle spline di grado $n$:**
+> I parametri liberi effettivi di una spline sono dati dalla differenza tra incognite totali e vincoli di continuità:
+> $$(n+1)(m+1) - nm = n+m+1$$
+
+<h3 style="color: red;">Spline di interpolazione</h3>
+
+Il nostro obiettivo è utilizzare le spline per interpolare i dati. Imponiamo quindi le **condizioni di interpolazione** per costringere la spline a passare per i nodi: $$ s(x_i) = y_i, \quad i=0, \ldots, m+1 $$
+
+Queste equazioni sono $m+2$ in totale. Se le sottraiamo ai gradi di libertà appena calcolati, otteniamo i gradi di libertà residui:
+$$(n+m+1) - (m+2) = n - 1$$
+
+> **Conclusione fondamentale:** Eccetto il caso lineare ($n=1$ in cui i gradi di libertà residui sono zero e la spezzata è unica), **non c'è un'unica spline di interpolazione**. Fissati i punti, esistono infinite spline di grado $n>1$ che li interpolano, che variano in base ai parametri liberi rimasti. Per le spline cubiche ($n=3$) restano sempre **2 parametri liberi**.
+
+---
+
+<h3 style="color: red;">Costruzione delle spline cubiche di interpolazione</h3>
+
+Vogliamo costruire gli $m+1$ polinomi di grado 3 del tipo:
+$$s_i(x) = \alpha_i + \beta_i (x - x_i) + \gamma_i (x - x_i)^2 + \delta_i (x - x_i)^3$$
+Calcolare la spline significa trovare le incognite $\alpha_i, \beta_i, \gamma_i, \delta_i$ partendo dai dati $(x_i, y_i)$. 
+
+**L'idea concettuale dietro la risoluzione:**
+Invece di risolvere un sistema gigante ed esplosivo, il problema si semplifica matematicamente notando che $\alpha_i$ corrisponde banalmente al dato di interpolazione $y_i$. Sfruttando le condizioni di continuità ($s=s, s'=s', s''=s''$), si riescono a scrivere i coefficienti $\gamma_i$ e $\delta_i$ in funzione solo delle derivate prime $\beta_i$. 
+Tutto si riduce alla costruzione di un **sistema lineare di equazioni in cui le uniche vere incognite sono i coefficienti $\beta$** (che rappresentano le pendenze della spline nei nodi).
+
+Questo sistema si presenta nella forma matriciale $Tz = c$ dove la matrice dei coefficienti $T$ risulta **strettamente diagonale dominante per righe**. Questo è un risultato vitale dal punto di vista dell'analisi numerica: assicura che il sistema ha sempre un'unica soluzione calcolabile in modo stabile!
+
+---
+
+<h3 style="color: red;">Risoluzione dei 2 gradi di libertà (Tipi di Spline)</h3>
+
+Abbiamo visto che per la spline cubica avanzano 2 gradi di libertà. Per ottenere un'unica spline definitiva dobbiamo imporre **due condizioni aggiuntive** agli estremi dell'intervallo $[x_0, x_{m+1}]$. In base alla scelta che facciamo, otteniamo tipi diversi di spline:
+
+1. **Spline Cubica Vincolata (Clamped):** Si impone il valore esatto delle derivate prime (le pendenze) agli estremi dell'intervallo: $s'(x_0) = \beta_0$ e $s'(x_{m+1}) = \beta_{m+1}$.
+2. **Spline Cubica Naturale:** Si assume che la curvatura agli estremi sia nulla, azzerando le derivate seconde: $s''(x_0) = 0$ e $s''(x_{m+1}) = 0$.
+3. **Spline Cubica Periodica:** Si usa per funzioni chiuse o periodiche (dove $y_0 = y_{m+1}$), imponendo che la spline si "chiuda dolcemente" su se stessa: $s'(x_0) = s'(x_{m+1})$ e $s''(x_0) = s''(x_{m+1})$.
+4. **Spline Not-a-knot (Matlab):** Si forza il primo e il secondo pezzo ($s_0$ e $s_1$) ad essere lo stesso identico polinomio cubico, e lo stesso vale per gli ultimi due. Di fatto, si rimuove un nodo come punto di giunzione reale.
+
+---
+
+<h3 style="color: red;">Proprietà e Teoremi delle Spline Cubiche</h3>
+
+> **Teorema della Minima Curvatura**
+> Tra tutte le infinite funzioni "lisce" ($f \in C^2$) che interpolano gli stessi punti dati, la spline cubica (vincolata, naturale o periodica) è quella che soddisfa la proprietà di minimo:
+> $$\int_a^b (s''(x))^2 dx \le \int_a^b (f''(x))^2 dx$$
+> *Significato fisico:* Le spline cubiche sono le curve che si flettono il meno possibile. Presentano le curve più 'dolci' ed evitano sbalzi di pendenza o repentine oscillazioni, simulando il comportamento di un vero listello elastico vincolato fisicamente.
+
+> **Teorema sull'Errore di Interpolazione**
+> Data la funzione originale $f \in C^2$ e chiamata $h$ l'ampiezza massima degli intervalli tra i nodi, l'errore commesso dalla spline cubica è limitato da:
+> $$|f(x) - s(x)| \le h^{\frac{3}{2}} \left( \int_a^b (f''(x))^2 dx \right)^{\frac{1}{2}}$$
+> Inoltre la derivata della spline approssima bene anche la derivata della funzione originaria:
+> $$|f'(x) - s'(x)| \le h^{\frac{1}{2}} \left( \int_a^b (f''(x))^2 dx \right)^{\frac{1}{2}}$$
+
+**Conseguenze dell'errore:** Le spline cubiche garantiscono un'accuratezza altissima che **migliora sempre** al diminuire della distanza $h$ tra i nodi. A differenza dei polinomi di grado elevato, con l'uso delle spline **non si verifica mai il fenomeno di Runge**.
+
+<h1 style="color: red;">Interpolazione 2D</h1>
+
+Dati $(x_i,y_j)\in\mathbb{R}^2$ e $z_{ij}\in\mathbb{R}$, con $i=1,\ldots,n$ e $j=1,\ldots,m$, vogliamo costruire una funzione $g:\mathbb{R}^2\to\mathbb{R}$ che interpoli i punti dati, ossia tale che:
+$$g(x_i,y_j)=z_{ij},\quad i=1,\ldots,n,\quad j=1,\ldots,m$$
+
+![1779721063892](image/5_interpolazione/1779721063892.png)
+
+---
+
+## Interpolazione bilineare
+
+Se $(x,y)$ è tale che $x\in[x_i,x_{i+1}]$ e $y\in[y_j,y_{j+1}]$, l'interpolante bilineare in $(x,y)$ si calcola con i seguenti tre passi:
+
+1. $$g(x,y_j)=g(x_i,y_j)+\frac{g(x_{i+1},y_j)-g(x_i,y_j)}{x_{i+1}-x_i}(x-x_i)$$
+2. $$g(x,y_{j+1})=g(x_i,y_{j+1})+\frac{g(x_{i+1},y_{j+1})-g(x_i,y_{j+1})}{x_{i+1}-x_i}(x-x_i)$$
+3. $$g(x,y)=g(x,y_j)+\frac{g(x,y_{j+1})-g(x,y_j)}{y_{j+1}-y_j}(y-y_j)$$
+
+![1779721822819](image/5_interpolazione/1779721822819.png)
+
+### Guida alla Lettura del Grafico: Interpolazione Bilineare
+
+Il grafico a sinistra illustra visivamente come trovare il valore del **punto verde $P$** alle coordinate $(x,y)$, partendo dai quattro **punti rossi $Q$** agli angoli del rettangolo (i nostri valori noti). 
+
+L'operazione si definisce "bilineare" perché, invece di usare una complessa formula 2D, divide il problema in **tre semplici interpolazioni lineari** (tracciando linee rette): due volte lungo la direzione $x$ e una volta lungo la direzione $y$.
+
+* **Passo 1 (Lato inferiore):** Si traccia un segmento tra i due punti rossi in basso, $Q_{11}$ e $Q_{21}$. Calcolando il valore in corrispondenza della coordinata $x$, si trova il primo **punto blu $R_1$**.
+* **Passo 2 (Lato superiore):** Si fa la stessa cosa sul segmento in alto, tra i punti rossi $Q_{12}$ e $Q_{22}$. Calcolando il valore alla stessa coordinata $x$, si trova il secondo **punto blu $R_2$**.
+* **Passo 3 (Asse verticale):** I punti rossi ora non servono più. Si traccia un segmento verticale tra i due nuovi punti blu $R_1$ e $R_2$. Calcolando il valore all'altezza $y$ su questo segmento, si ottiene finalmente il **punto verde $P$**.
+
+> **Cosa rappresenta il grafico 3D a destra?** > Mostra le altezze reali (il valore della funzione, o asse $z$) dei punti. Le aste esterne sono i quattro angoli noti. Questa tecnica crea di fatto una superficie curva (a "sella") tesa tra quei quattro angoli, e l'asta nera centrale rappresenta l'altezza esatta del punto $P$ calcolata sulla base degli angoli circostanti.
+
+### Formulazione come Combinazione Lineare (Somma Pesata)
+
+La formula per calcolare l'interpolante bilineare può essere riscritta in modo più compatto come una **somma pesata** dei quattro valori noti ai vertici:
+$$g(x,y)=w_{ij}g(x_i,y_j)+w_{i,j+1}g(x_i,y_{j+1})+w_{i+1,j}g(x_{i+1},y_j)+w_{i+1,j+1}g(x_{i+1},y_{j+1})$$
+
+I "pesi" $w$ dipendono esclusivamente dalla geometria del rettangolo e dalla distanza del punto $(x,y)$ dai vertici:
+* $w_{ij}=\frac{(x_{i+1}-x)(y_{j+1}-y)}{(x_{i+1}-x_i)(y_{j+1}-y_j)}$
+* $w_{i+1,j}=\frac{(x-x_i)(y_{j+1}-y)}{(x_{i+1}-x_i)(y_{j+1}-y_j)}$
+* $w_{i,j+1}=\frac{(x_{i+1}-x)(y-y_j)}{(x_{i+1}-x_i)(y_{j+1}-y_j)}$
+* $w_{i+1,j+1}=\frac{(x-x_i)(y-y_j)}{(x_{i+1}-x_i)(y_{j+1}-y_j)}$
+
+**Caso speciale: Griglia Uniforme su un raffinamento**
+Se assumiamo che la griglia dei nodi sia perfettamente equispaziata ($\Delta_x = x_{i+1}-x_i$ e $\Delta_y = y_{j+1}-y_j$) e vogliamo calcolare il punto esattamente al centro, le formule collassano in un calcolo elementare. Ad esempio, fissando per semplicità $\Delta_x=\Delta_y=2$, tutti e quattro i pesi diventano uguali a $\frac{1}{4}$. L'interpolazione si riduce alla media aritmetica dei quattro vertici:
+$$g(x,y)=\frac{1}{4}(g(x_i,y_j)+g(x_i,y_{j+1})+g(x_{i+1},y_j)+g(x_{i+1},y_{j+1}))$$
+
+---
+
+## Interpolazione bicubica e Spline 2D
+
+*Nota generale: Con lo stesso principio visto per l'interpolazione bilineare (scomporre il problema 2D in una sequenza di problemi 1D), si possono ottenere le versioni bidimensionali di tutte le tecniche di interpolazione 1D*.
+
+Se $(x,y)$ è tale che $x\in[x_i,x_{i+1}]$ e $y\in[y_j,y_{j+1}]$, l'interpolante bicubica in $(x,y)$ si calcola con i seguenti passi:
+
+1. Calcolare $g(x,y_{j-1})$ valutando il polinomio cubico che interpola $(x_{i-1},y_{j-1}),(x_i,y_{j-1}),(x_{i+1},y_{j-1}),(x_{i+2},y_{j-1})$
+2. Calcolare $g(x,y_j)$ valutando il polinomio cubico che interpola $(x_{i-1},y_j),(x_i,y_j),(x_{i+1},y_j),(x_{i+2},y_j)$
+3. Calcolare $g(x,y_{j+1})$ valutando il polinomio cubico che interpola $(x_{i-1},y_{j+1}),(x_i,y_{j+1}),(x_{i+1},y_{j+1}),(x_{i+2},y_{j+1})$
+4. Calcolare $g(x,y_{j+2})$ valutando il polinomio cubico che interpola $(x_{i-1},y_{j+2}),(x_i,y_{j+2}),(x_{i+1},y_{j+2}),(x_{i+2},y_{j+2})$
+5. Infine, calcolare $g(x,y)$ valutando il polinomio cubico che interpola i quattro risultati appena trovati: $(x,g(x,y_{j-1})),(x,g(x,y_j)),(x,g(x,y_{j+1})),(x,g(x,y_{j+2}))$
+
+![1779722498667](image/5_interpolazione/1779722498667.png)
+
+### Guida alla Lettura del Grafico: Interpolazione Bicubica
+
+Il grafico a sinistra mostra come il punto da calcolare (il **pallino nero**) non dipenda solo dal quadrato in cui si trova, ma da una "finestra" più ampia di **16 punti noti** (disposti su 4 righe e 4 colonne).
+
+L'interpolazione avviene scomponendo il processo in **cinque interpolazioni monodimensionali tramite curve (polinomi cubici)**:
+
+* **Passi 1-4 (Linee orizzontali):** Per ciascuna delle 4 righe orizzontali ($y_{j-1}, y_j, y_{j+1}, y_{j+2}$), si prende il gruppo di 4 punti noti e ci si fa passare una curva cubica. Su ognuna di queste 4 curve, si calcola il valore esatto alla coordinata $x$ desiderata. Questo ci fornisce **4 nuovi punti intermedi** (rappresentati dai **pallini viola** allineati verticalmente).
+* **Passo 5 (Curva verticale):** Ora si ignorano i 16 punti originali. Si prende una nuova curva cubica e la si fa passare attraverso i 4 pallini viola appena calcolati. Calcolando il valore di questa curva all'altezza $y$, si ottiene finalmente il **pallino nero** (il nostro $g(x,y)$ finale).
+
+> **Cosa rappresenta il grafico 3D a destra?** > Mostra la superficie generata. A differenza dell'interpolazione bilineare (che crea superfici con "spigoli" o pieghe visibili in corrispondenza dei punti noti), l'uso di polinomi cubici genera una superficie **estremamente liscia e continua**, senza interruzioni brusche nella pendenza.
+
+### Interpolazione Spline 2D
+Un'alternativa ancora più regolare rispetto ai semplici polinomi bicubici è l'**interpolazione spline 2D**. Si costruisce con una logica del tutto analoga all'interpolante bicubica (incrociando le direzioni $x$ e $y$), ma utilizzando le *spline cubiche 1D* lungo le due direzioni. Questo garantisce che non solo la funzione sia continua, ma che lo siano anche le sue derivate prime e seconde sull'intera griglia!
+
+---
+
+## Applicazioni Pratiche
+
+L'interpolazione 2D trova largo impiego in informatica, specialmente nell'elaborazione di immagini digitali (dove i nodi sono i pixel):
+* **Ingrandimento di immagini (Upscaling):** Quando un'immagine viene ingrandita, il software deve "inventare" i pixel mancanti interpolando i colori di quelli noti adiacenti.
+* **Image Inpainting:** Tecniche di restauro digitale in cui si ricostruiscono parti danneggiate o mancanti di un'immagine interpolando le informazioni dal contorno sano. 
+
 ---
 
 Note (implementazione in Python):
@@ -186,3 +350,5 @@ Note (implementazione in Python):
 |---|---|---|
 | Input | $x_i$, $y_i$, grado del polinomio | Coefficienti del polinomio, punto di valutazione $\bar{x}$ |
 | Output | Coefficienti del polinomio di interpolazione | Valore del polinomio in $\bar{x}$ |
+
+Per creare le spline cubiche in SciPy si utilizza la funzione `scipy.interpolate.CubicSpline` che accetta i nodi $x_i$, i valori $y_i$ e il tipo di spline desiderato (vincolata, naturale, periodica). La valutazione della spline in un punto $\bar{x}$ avviene semplicemente chiamando l'oggetto spline come una funzione: `spline(𝑥̄)`.

@@ -58,3 +58,46 @@ Ora devi posare la penna. Gli schemi sono finiti. Da qui in poi si  **parla** .
 1. **Non trascurare i Colab/Python:** Il professore ha inserito un sacco di notebook. Anche se è un orale, potrebbe chiederti: *"Come implementeresti questo in Python?"* o  *"Che struttura dati useresti?"* . Non devi sapere il codice a memoria riga per riga, ma devi conoscere la  **logica dell'algoritmo** .
 2. **Attenzione al "Tutto Schematizzato":** Schematizzare 400 slide rischia di farti perdere troppo tempo. Cerca di fare schemi  *agili* : scrivi solo gli enunciati dei teoremi, la formula chiave e la complessità. Il resto del discorso costruiscilo a voce.
 3. **Il filo conduttore:** Metodi Numerici si basa su un trade-off continuo tra **precisione** (errore), **costo computazionale** (numero di operazioni) e  **stabilità** . Ogni volta che studi un algoritmo nuovo, chiediti: *Quanto costa? Quanto è preciso? Sotto quali ipotesi fallisce?*
+
+--- 
+Ah, questo cambia un po' le cose, ma è normalissimo! Se hai fatto il primo caricamento trascinando i file direttamente dal sito di GitHub, significa che la cartella che hai sul tuo computer non è "collegata" alla repository online tramite Git.
+
+A questo punto hai due strade davanti a te. Scegli quella che ti è più comoda:
+
+### Opzione 1: Continuare via web (Drag & Drop)
+
+Se per ora non vuoi configurare il terminale e preferisci continuare a fare tutto dal browser, puoi tranquillamente usare di nuovo il drag & drop. GitHub è abbastanza intelligente da capire che stai aggiornando dei file e non creandone di nuovi.
+
+1. Vai sulla pagina della tua repository su GitHub.
+2. Clicca sul pulsante **Add file** (si trova in alto a destra sopra l'elenco dei file) e seleziona **Upload files**.
+3. Trascina i file che hai modificato (o direttamente l'intera cartella) nel riquadro.
+4. Poiché i file hanno lo stesso nome e si trovano nella stessa posizione, GitHub andrà a **sovrascrivere quelli vecchi**, registrando la modifica.
+5. In fondo alla pagina, inserisci un titolo sotto *Commit changes* (es. "Aggiornati un paio di file") e clicca sul pulsante verde **Commit changes**.
+
+---
+
+### Opzione 2: Passare al Terminale (Consigliato per il futuro)
+
+Se invece vuoi iniziare a usare i comandi del terminale che ti ho spiegato prima (che è il metodo migliore a lungo termine), devi prima "collegare" il tuo computer a GitHub. Il modo più semplice e sicuro per farlo senza creare pasticci è scaricare la repository online sul tuo PC.
+
+1. **Copia il link della repo:** Vai su GitHub, clicca sul pulsante verde **<> Code** e copia l'indirizzo web (quello che finisce per `.git`).
+2. **Scarica il progetto:** Apri il terminale, spostati in una cartella dove vuoi tenere i tuoi progetti (es. il Desktop) e scrivi:
+```bash
+git clone INCOLLA_QUI_IL_LINK_COPIATO
+
+```
+
+
+
+```
+   *(Questo creerà una nuova cartella sul tuo PC perfettamente sincronizzata con GitHub).*
+3. **Aggiorna i file:** Prendi i file che avevi modificato oggi nella tua cartella originale e **copiali/incollali** dentro questa nuova cartella appena scaricata (sostituendo quelli vecchi).
+4. **Fai il Commit:** Ora spostati dentro la nuova cartella dal terminale (`cd nome-cartella`) e sei finalmente pronto per usare i comandi standard:
+   ```bash
+   git add .
+   git commit -m "Aggiornati file modificati oggi"
+   git push
+
+```
+
+Se scegli la seconda opzione, d'ora in poi potrai lavorare sempre e solo dentro questa nuova cartella "clonata" e usare i comandi per fare gli aggiornamenti in pochi secondi!
