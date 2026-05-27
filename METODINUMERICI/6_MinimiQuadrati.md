@@ -12,7 +12,7 @@ $$y=a_0+a_1x$$
 
 ### Criterio dei minimi quadrati
 Si determinano i parametri del modello scelto che **minimizzano** la distanza quadratica cumulativa tra i dati previsti dal modello e quelli misurati:
-$$Q(a_0,a_1)=\sum_{i=1}^{m}(a_0+a_1x_i-y_i)^2$$
+$$Q(a_0,a_1)=\sum_{i=1}^{m}(a_0+a_1x_i-y_i)^2 \quad \Rightarrow \quad \text{(distanza quadratica cumulativa)}$$
 
 ### Formulazione matriciale della retta di regressione
 Introduciamo i vettori delle predizioni e delle misurazioni:
@@ -22,7 +22,7 @@ $$Q(a_0,a_1)=||q(a_0,a_1)-y||^2$$
 Separando le variabili dalle incognite, esprimiamo $q(a_0,a_1)$ in forma matriciale come $A\alpha$:
 $$A=\begin{bmatrix}1&x_1\\1&x_2\\\vdots&\vdots\\1&x_m\end{bmatrix}\in\mathbb{R}^{m\times 2}\quad\text{e}\quad\alpha=\begin{bmatrix}a_0\\a_1\end{bmatrix}\in\mathbb{R}^2$$
 Dunque la funzione da minimizzare diventa esplicitamente:
-$$Q(a_0,a_1)=||A\alpha-y||^2$$
+$$Q(a_0,a_1) = ||\underbrace{\begin{bmatrix}1 & x_1 \\ 1 & x_2 \\ \vdots & \vdots \\ 1 & x_m\end{bmatrix}}_{A} \underbrace{\begin{bmatrix}a_0\\a_1\end{bmatrix}}_{\alpha} - \underbrace{\begin{bmatrix}y_1\\y_2\\\vdots\\y_m\end{bmatrix}}_{y} ||^2 = ||A\alpha-y||^2$$
 
 ---
 
