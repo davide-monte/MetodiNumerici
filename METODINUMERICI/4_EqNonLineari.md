@@ -1,4 +1,4 @@
-# Metodi per la soluzione di equazioni non lineari
+<h1 style='color:red'> Metodi per la soluzione di equazioni non lineari </h1>
 
 ### Definizione del problema
 
@@ -31,7 +31,7 @@ Verifichiamo la presenza di radici tramite il seguente teorema:
 
 **Importante**: Le ipotesi del teorema del valor medio non garantiscono l'unicità della soluzione, ma solo l'esistenza di almeno una radice. Per garantire l'unicità della soluzione, è una condizione sufficiente che la funzione sia strettamente monotona (ad esempio, strettamente crescente o decrescente).
 
-#### Condizionamento del problema
+### Condizionamento del problema
 
 Il mal condizionamento di un problema di equazioni non lineari si ha quando il grafico di $f$ è molto "schiacciato e piatto" sull'asse orizzontale in prossimità della radice.
 Se consideriamo un problema perturbato dove $f(x) = \delta$, e approssimiamo il rapporto incrementale come $f'(x_*) \simeq \frac{f(x) - f(x_*)}{x - x_*}$, per un punto perturbato $\tilde{x}$ possiamo scrivere:
@@ -62,7 +62,7 @@ Di conseguenza, se $f'(x_*) \approx 0$, anche un errore $\delta$ piccolissimo ge
 
 ---
 
-## Metodo di bisezione
+<h2 style='color:blue'> Metodo di bisezione </h2>
 
 Come dati abbiamo un intervallo di ricerca $[a,b]$ e come ipotesi una funzione *continua* che assume **segno discorde** agli estremi dell'intervallo, ossia $f(a) \cdot f(b) < 0$. <br>
 Questo metodo consiste nell'applicare ripetutamente il teorema del valor medio, generando una successione di intervalli di ampiezza decrescente i cui punti medi convergono ad una radice di $f$. L'obiettivo è applicare iterativamente il problema restringendo man mano il dominio di ricerca $[a,b]$ dove è verificato il problema.
@@ -173,7 +173,7 @@ con $C$ costante reale. **Più $p$ è grande, maggiore è la velocità con cui l
 * **Vantaggi:** Richiede requisiti minimi (solo la continuità di $f$) e ha una bassissima complessità computazionale ad ogni passo (1 valutazione/iterazione).
 * **Svantaggi:** Converge molto lentamente alla soluzione (convergenza lineare) e non si può estendere matematicamente ai sistemi di equazioni non lineari.
 
-## Variante del metodo di bisezione: Regula Falsi
+<h2 style='color:blue'> Variante del metodo di bisezione: Regula Falsi </h2>
 
 Invece di usare il punto medio geometrico, scegliamo come punto $c_k$ l'intersezione tra l'asse delle ascisse e la secante (retta) che congiunge i punti $(a_k,f(a_k))$ e $(b_k,f(b_k))$.
 
@@ -184,7 +184,7 @@ $$ c_k = b_k - \frac{f(b_k)}{\frac{f(b_k) - f(a_k)}{b_k - a_k}} $$
 
 Questo metodo ha proprietà simili a quelle del metodo di bisezione. Entrambi i metodi si dicono **dicotomici**.
 
-## Metodo di Newton (o metodo delle tangenti)
+<h2 style='color:blue'> Metodo di Newton (o metodo delle tangenti) </h2>
 
 - Fissato un intervallo di riferimento $[a,b]$, il metodo di Newton si applica a funzioni differenziabili, $f \in C^1([a,b])$, quindi ci serve la **derivata prima** della funzione.
 
@@ -236,7 +236,8 @@ allora si ha che, per ogni scelta del punto iniziale $x_0 \in [a, b]$, le iterat
 $$ \frac{|x_{k+1} - x_k|}{|x_k|} \leq \tau \quad \text{e} \quad |f(x_k)| \leq \tau $$
 - **NB**: Il residuo NON è affidabile quando il grafico di $f$ è molto schiacciato sull'asse $x$.
 
-## Metodo delle secanti
+<h2 style='color:blue'> Metodo delle secanti </h2>
+
 E' una variante del metodo di Newton in cui la derivata prima viene approssimata con un rapporto incrementale:
 $$ x_{k+1} = x_k - \frac{f(x_k)}{\frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}} $$
 Il nuovo punto è l'intersezione tra l'asse delle ascisse e la retta per i punti di coordinate $(x_{k-1}, f(x_{k-1})), (x_k, f(x_k))$

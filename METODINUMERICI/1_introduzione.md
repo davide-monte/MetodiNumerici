@@ -1,256 +1,156 @@
-# Introduzione ai contenuti del corso
+<h1 style='color:red'> Introduzione ai contenuti del corso </h1>
 
-**Calcolo Numerico**: elementi di base di Analisi Numerica (matematica applicata) e di programmazione in Python (linguaggio di programmazione ad alto livello, orientato agli oggetti, con una sintassi semplice e chiara).
+**Calcolo Numerico**: elementi di base di Analisi Numerica (matematica applicata) e programmazione in Python (linguaggio ad alto livello).
 
-> **Di cosa si occupa l'Analisi Numerica?** Lo scopo di questa branca della matematica è quello di _risolvere problemi matematici mediante un calcolatore_.
+> **Di cosa si occupa l'Analisi Numerica?** Lo scopo di questa branca della matematica è risolvere problemi matematici mediante un calcolatore. Comprende l'analisi di problemi reali, la loro modellizzazione matematica, lo sviluppo di algoritmi e la loro implementazione.
 
-Un calcolatore (1) è una macchina in grado di *eseguire rapidamente grandi quantità di operazioni aritmetiche*, (2) non è in grado di elaborare entità astratte ma solo *dati rappresentati in forma numerica*, (3) deve avere una *lista precisa e ordinata di istruzioni* da eseguire.
+Un calcolatore è una macchina in grado di *eseguire rapidamente grandi quantità di operazioni aritmetiche*. Tuttavia, esso non elabora entità astratte, ma solo *dati rappresentabili in forma di numeri*, e ha bisogno di una *lista precisa e ordinata di istruzioni*.
+Tutto ciò impone una formulazione opportuna dei problemi e una progettazione accurata delle procedure per risolverli.
 
-L'uso del calcolatore impone una formulazione opportuna dei problemi da risolvere e la progettazione accurata della procedura con cui calcolarle.
-
-**ESEMPIO** (problemi matematici **analitici** e **numerici**):
+**ESEMPIO** (Problemi matematici **analitici** e **numerici**):
 Data la funzione $f(x) = \sin(x^2)$, calcolarne la derivata.
 
-- **Soluzione analitica (astratta)**: $f'(x) = 2x \cos(x^2)$. In poche parole, il dato del problema analitico è la funzione $f(x)$, mentre la soluzione è un'altra funzione $f'(x)$.
-- **Soluzione numerica (calcolabile)**: applicando i teoremi e i principi dell'analisi numerica, si definisce una procedura che, dato un numero reale $x$, restituisce un numero reale $y$ che approssima bene la derivata prima di $f$ in $x$
-  $$
-  y \approx f'(x)
-  $$
+- **Soluzione analitica (astratta)**: Applicando i teoremi dell'analisi, $f'(x) = 2x \cos(x^2)$. Il dato in ingresso è una funzione $f(x)$ e il risultato è un'altra funzione $f'(x)$.
+- **Soluzione numerica (calcolabile)**: Applicando l'analisi numerica, si definisce una procedura che, dato un numero reale $x$, restituisce un numero reale $y$ che approssima bene la derivata prima in quel punto: $y \approx f'(x)$. Il dato in ingresso è un numero, il risultato è un numero.
 
-|                     | INPUT    | OUTPUT    |
-| ------------------- | -------- | --------- |
-| **Analitico** | $f(x)$ | $f'(x)$ |
-| **Numerico**  | $x$    | $y$     |
+| Approccio           | INPUT            | OUTPUT            |
+| :------------------ | :--------------- | :---------------- |
+| **Analitico** | Funzione $f(x)$ | Funzione $f'(x)$ |
+| **Numerico**  | Numero $x$      | Numero $y$       |
 
-Per ottenere una soluzione numerica, occorre fornire al calcolatore i dati e la lista precisa delle operazioni da eseguire a partire da essi, una lista contenente solo operazioni che il calcolatore è in grado di eseguire.
+> **Definizione generale (ALGORITMO):** Una procedura che, a partire da un insieme di dati in ingresso, produce un insieme di risultati in uscita mediante un numero finito di passi definiti in modo univoco. (Dal matematico arabo al-Khuwarizmi).
 
-> **Definizione generale** (ALGORITMO): Un algoritmo è una procedura che, a partire da un insieme di dati in ingresso, produce un insieme di risultati in uscita mediante un numero finito di passi definiti in modo univoco.
+Negli **algoritmi numerici**, sia i dati di input che di output sono *numeri reali*. I passi sono costituiti unicamente da successioni delle quattro operazioni aritmetiche fondamentali.
 
-Negli algoritmi *numerici* i dati in input e le soluzioni in output sono **numeri reali**, mentre i passi da eseguire sono **successioni di operazioni aritmetiche elementari** (addizione, sottrazione, moltiplicazione, divisione), per poter essere eseguiti da un calcolatore.
+---
 
-> **Punto di partenza del corso**:
->
-> 1. In che modo il calcolatore memorizza i numeri interi e reali?
-> 2. In che modo il calcolatore esegue le operazioni aritmetiche sui numeri interi e reali?
+## Il problema fondamentale: La Memoria Finita
 
-# La rappresentazione dei numeri
+Lo strumento che esegue i calcoli è il calcolatore, il quale ha uno **spazio di memoria finito**. Questo ha conseguenze enormi sulla progettazione e sull'analisi degli algoritmi.
 
-**La notazione posizionale** è un sistema di rappresentazione dei numeri in cui il valore di una cifra dipende dalla sua posizione all'interno del numero.
-Il numero è un *entità astratta* (ad esempio, quantità "sette" univocamente determinata), la cui *rappresentazione* è una sequenza di simboli (ad esempio, $7$, $(111)_2$, $VII$, ... molteplice a seconda dei criteri di rappresentazione adottati) che codifica il numero stesso.
+**Esempio pratico (Python):**
 
-La convenzione più comune per rappresentare i numeri è quella di utilizzare un sistema di numerazione posizionale in base $b$ (dove $b$ è un intero maggiore di 1), in cui ogni cifra rappresenta una potenza di $b$.
+```python
+u = 1.0
+i = 0
+while u + 1 > 1:
+    u = u / 2
+    i += 1
+print(u, i) # Output: 5e-324 1074
+```
 
-Ad esempio, nel sistema decimale (base 10), il numero $123$ rappresenta:
+Eseguendo questo codice, l'output non andrà in loop infinito, ma si fermerà stampando **`1.1102230246251565e-16 53`**. **Significa che, ad un certo punto, per il calcolatore l'uguaglianza **$1 + \frac{1}{2^{53}} = 1$** risulta vera**. **Questo accade proprio perché il computer non ha memoria infinita per rappresentare numeri infinitamente piccoli**.
 
-$$
-1 \cdot 10^2 + 2 \cdot 10^1 + 3 \cdot 10^0 = 100 + 20 + 3
-$$
+Da qui sorgono le due domande chiave del corso:
 
-| BASE | SIMBOLI (Insieme $S$)                               |
-| ---- | ---------------------------------------------------- |
-| 2    | ${0, 1}$                                           |
-| 8    | ${0, 1, 2, 3, 4, 5, 6, 7}$                         |
-| 16   | ${0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F}$ |
+1. **In che modo il calcolatore memorizza i numeri interi e reali?**
+2. **In che modo esegue le operazioni aritmetiche su di essi?**
 
-L'insieme dei simboli contiene le cifre da $0$ a $b-1$, dove $b$ è la base del sistema di numerazione.
+<h1 style='color:red'> La rappresentazione dei numeri </h1>
 
-Secondo la definizione formale, ogni numero naturale **$N$** può essere espresso univocamente come una stringa di cifre in una determinata base **$\beta$**:
+Distinzione fondamentale: il numero è un'**entità astratta** (es. la quantità "sette"), mentre la **rappresentazione** è la sequenza di simboli usata per codificarlo (es. **$7$**, **$(111)_2$**, **$VII$**).
 
-$$
-N = (c_p c_{p-1} \dots c_1 c_0)_\beta
-$$
+La convenzione standard è la **notazione posizionale** in base **$\beta$** ($\beta > 1$), in cui ogni cifra assume un "peso" diverso a seconda della sua posizione.
 
-Per determinare il valore quantitativo di **$N$**, si utilizza la **scomposizione polinomiale**. Ogni cifra **$c_i$** viene moltiplicata per la base **$\beta$** elevata alla potenza corrispondente alla sua posizione **$i$** (partendo da **$0$** da destra verso sinistra):
+| BASE (β)       | SIMBOLI (Insieme S)                                    |
+| ------------------------- | ---------------------------------------------------------------- |
+| **2** (Binaria)      | **$\{0, 1\}$**                                           |
+| **8** (Ottale)       | **$\{0, 1, 2, 3, 4, 5, 6, 7\}$**                         |
+| **16** (Esadecimale) | **$\{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F\}$** |
+
+Un numero naturale **$N$** è espresso univocamente come stringa di cifre: $N = (c_p c_{p-1} \dots c_1 c_0)_\beta$. Il valore quantitativo si ottiene con la scomposizione polinomiale:
 
 $$
 N = c_p \beta^p + c_{p-1} \beta^{p-1} + \dots + c_1 \beta^1 + c_0 \beta^0
 $$
 
-#### Componenti della formula:
+> **Regola Fondamentale:** All'aumentare della base, aumenta il numero dei simboli ma diminuiscono le cifre necessarie per rappresentare uno stesso valore.
 
-* **$c_i$ (Cifra):** Il simbolo grafico scelto dall'insieme **$S$**. Per "abuso di notazione", il simbolo viene identificato direttamente con il suo valore numerico.
-* **$i$ (Posizione/Indice):** L'esponente della base. Nota che il conteggio parte sempre da **0** (posizione della cifra meno significativa, a destra).
-* **$\beta$ (Base):** Il fattore di moltiplicazione che determina il "peso" di ogni posizione.
-* **$p$:** L'indice della cifra più significativa (quella più a sinistra), che determina l'ordine di grandezza del numero.
+### Cifre Significative
 
-> **Regola Fondamentale:** In ogni base **$\beta$**, il valore di ogni singola cifra **$c_i$** deve sempre essere strettamente minore della base stessa (**$0 \le c_i < \beta$**).
+Dato un numero rappresentato come **$c_p c_{p-1} \dots c_1 c_0$** (con **$c_p \neq 0$**):
 
-> **Osservazione**: All'aumentare della base, aumenta il numero di simboli necessari per la rappresentazione dei numeri, ma diminuisce la lunghezza della stringa necessaria per rappresentare lo stesso numero, cioè sono necessarie meno cifre.
-> Esempio: il numero decimale **$255$** può essere rappresentato in base **$2$** come **$(11111111)_2$** (8 cifre), mentre in base **$16$** come **$(FF)_{16}$** (2 cifre).
+* **Le **$t$** cifre meno significative**: Sono i pesi delle potenze *più piccole* della base. Si contano da **destra** verso sinistra.
+* **Le **$t$** cifre più significative**: Sono i pesi delle potenze *più grandi* della base. Si contano da **sinistra** (partendo dalla prima cifra non nulla) verso destra.
 
-### La rappresentazione dei numeri reali < 1 in base $\beta$
+## Rappresentazione dei numeri reali in base **$\beta$**
 
-Un numero reale $\alpha$, $0 \le \alpha < 1$, può essere rappresentato in base $\beta > 1$ come $\alpha = (0.a_1 a_2 a_3 \dots)_\beta = a_1 \beta^{-1} + a_2 \beta^{-2} + a_3 \beta^{-3} + \dots$ dove "." è il *punto radice* e $a_i$ sono le cifre (simboli) che rappresentano i numeri da $0$ a $\beta - 1$.
-
-Naturalmente, per rappresentare certi valori (numeri periodici, irrazionali, ...) è necessario un numero infinito di cifre.
-
-## Rappresentazione di un qualsiasi numero reale
-
-Un numero reale $\alpha$ si può ottenere come somma della sua parte intera più la sua parte frazionaria, rimettendo tutto insieme, si ottiene la seguente rappresentazione di un qualsiasi numero reale:
+Un numero reale **$0 \le \alpha < 1$** si rappresenta come:
 
 $$
-\alpha = (a_n a_{n-1} \dots a_1 a_0 . a_{-1} a_{-2} \dots)_\beta = a_n \beta^n + a_{n-1} \beta^{n-1} + \dots + a_1 \beta^1 + a_0 \beta^0 + a_{-1} \beta^{-1} + a_{-2} \beta^{-2} + \dots
+\alpha = (0.a_1 a_2 \dots a_t \dots)_\beta = a_1 \beta^{-1} + a_2 \beta^{-2} + \dots = \sum_{i=1}^{\infty} a_i \beta^{-i}
 $$
 
-### La Rappresentazione dei Numeri Reali (Forma Normalizzata)
+Tutto ciò a destra del punto radice rappresenta il peso di una potenza negativa. **Spesso, per valori irrazionali o periodici, serve un numero infinito di cifre**.
 
-Per rappresentare un qualsiasi numero reale **$\alpha$** all'interno di un sistema di calcolo, è necessario "standardizzare" la sua forma separando le cifre significative dall'ordine di grandezza. Questo si ottiene esprimendo il numero come il prodotto di tre componenti:  **segno** , **mantissa** ed  **esponente** .
+### Forma Scientifica Normalizzata
 
-#### 1. Il procedimento matematico (Raccoglimento)
-
-Sia dato un numero reale **$\alpha$** in base **$\beta$**, avente **$p$** cifre nella sua parte intera.
-
-La sua espressione polinomiale iniziale è:
-
-$$
-\alpha = \text{segno}(\alpha) \cdot (a_1 \beta^{p-1} + a_2 \beta^{p-2} + \dots)
-$$
-
-L'obiettivo è spostare idealmente la "virgola" tutta a sinistra. Matematicamente, questo si ottiene  **raccogliendo a fattor comune **$\beta^p$**** .
-
-Dividendo tutti i termini per **$\beta^p$** (il che equivale a sottrarre **$p$** agli esponenti), otteniamo solo potenze negative:
-
-$$
-\alpha = \text{segno}(\alpha) \cdot (a_1 \beta^{-1} + a_2 \beta^{-2} + a_3 \beta^{-3} + \dots) \cdot \beta^p
-$$
-
-Che può essere scritta in forma compatta come:
-
-$$
-\alpha = \text{segno}(\alpha) \cdot \sum_{i=1}^{\infty} (a_i \beta^{-i}) \cdot \beta^p
-$$
-
-Ottenendo infine la forma canonica:
+Un generico numero reale **$\alpha$** (parte intera + frazionaria) si può scrivere sempre "raccogliendo" la potenza adeguata della base $\beta^p$:
 
 $$
 \alpha = \text{segno}(\alpha) \cdot m \cdot \beta^p
 $$
 
-#### 2. Le tre componenti fondamentali
+1. **Segno**: $+1$ o $-1$.
+2. **Mantissa (**$m$**)** **: Un numero reale **$< 1$**, composto solo da potenze negative della base**.
+3. **Esponente (**$p$**)**: Potenza a cui elevare la base $\beta$.
 
-Dalla formula finale **$\alpha = \text{segno}(\alpha) \cdot m \cdot \beta^p$** emergono i tre "blocchi" con cui un computer memorizza i numeri reali (es. standard *IEEE 754* per i  *float/double* ):
+**Se $a_1 \neq 0$** (cioè la prima cifra decimale della mantissa non è zero), si parla di **forma scientifica normalizzata**. *Solo la forma normalizzata garantisce l'unicità della rappresentazione*.
 
-* **Segno:** Vale **$+1$** o **$-1$** e indica se il numero è positivo o negativo.
-* **Mantissa (**$m$**):** È la sequenza di tutte le cifre del numero, scritte dopo la virgola. Essendo formata solo da potenze negative della base (**$\beta^{-1}, \beta^{-2}, \dots$**), la mantissa è sempre **un numero reale strettamente minore di 1** (forma **$0,a_1 a_2 \dots$**).
-* **Esponente (**$\beta^p$**):** Indica l'ordine di grandezza del numero. Il valore **$p$** (un numero intero) comunica di quante posizioni è necessario spostare la virgola verso destra per ricostruire il numero originale.
+## Conversioni di Base (Algoritmi)
 
-> **Esempio pratico in base 10:**
->
-> Vogliamo rappresentare il numero **$345,67$**
->
-> * Ha **$3$** cifre intere, quindi **$p = 3$**.
-> * Raccogliamo **$10^3$**: la virgola si sposta di tre posti a sinistra.
-> * La formula diventa: **$+1 \cdot 0,34567 \cdot 10^3$**
->   * Segno: **$+1$**
->   * Mantissa (**$m$**): **$0,34567$**
->   * Esponente: **$10^3$**
+**Per convertire un numero **$\alpha$** decimale in una base **$\beta$**, si divide il numero nelle sue componenti e si applicano due algoritmi separati**:
 
-Le rappresentazioni del tipo *segno* - *mantissa* - *esponente* si dicono in **forma scientifica** e, se il primo numero decimale della mantissa è diverso da zero, si dicono in **forma scientifica normalizzata**.
+1. **Algoritmo delle divisioni successive (per la parte intera)**:
+   Si divide la parte intera per la base **$\beta$**. **I resti delle divisioni, letti dall'ultimo al primo, compongono le cifre convertite**.
+2. **Algoritmo delle moltiplicazioni successive (per la parte frazionaria)**:
+   Si moltiplica la parte frazionaria per **$\beta$**. La parte intera risultante diventerà la cifra della rappresentazione. **Si ripete iterando sempre e solo sulla nuova parte frazionaria residua**.
 
-> Esempi:
->
-> - $(372)_{10}$ (mista)
-> - $.372 \times 10^3$ (normalizzata)
-> - $.0372 \times 10^4$ (scientifica)
+**Esempio di Sintesi (Convertire **$-(25.375)_{10}$** in base 2)**:
 
-### Algoritmo delle divisioni successive
+* **Segno** **: Negativo (**$-$**)**.
+* **Parte intera** **: **$\lfloor | -25.375 | \rfloor = 25$**$\implies (25)_{10} = (11001)_2$**.
+* **Parte frazionaria** : **$0.375$** **$\implies 0.375 \times 2 = 0.75$** (Cifra  **0** ); **$0.75 \times 2 = 1.5$** (Cifra  **1** ); **$0.5 \times 2 = 1.0$** (Cifra  **1**)$\implies (.011)_2$.
+* **Risultato**: $-(11001.011)_2$.
 
-Serve per rappresentare un numero intero positivo $\alpha \in \mathbb{N}$ da base $10$ ad una diversa base $\beta$.
-L'algoritmo consiste nell'eseguire la divisione intera (quoziente e resto) del numero $\alpha$ per la base $\beta$, e continuare a dividere il quoziente ottenuto fino a quando non si ottiene un quoziente nullo.
+<h1 style='color:red'> I Numeri di Macchina - Il formato Fixed Point (Virgola Fissa) </h1>
 
-> **Esempio**: rappresentare il numero decimale **$(1972)_{10}$** in base **$2$**.
->
-> 1. $1972 \div 2 = 986$ (quoziente), resto $0$ (cifra meno significativa)
-> 2. $986 \div 2 = 493$ (quoziente), resto $0$
-> 3. $493 \div 2 = 246$ (quoziente), resto $1$
-> 4. $246 \div 2 = 123$ (quoziente), resto $0$
-> 5. $123 \div 2 = 61$ (quoziente), resto $1$
-> 6. $61 \div 2 = 30$ (quoziente), resto $1$
-> 7. $30 \div 2 = 15$ (quoziente), resto $0$
-> 8. $15 \div 2 = 7$ (quoziente), resto $1$
-> 9. $7 \div 2 = 3$ (quoziente), resto $1$
-> 10. $3 \div 2 = 1$ (quoziente), resto $1$
-> 11. $1 \div 2 = 0$ (quoziente), resto $1$ (cifra più significativa)
->     Il numero binario è ottenuto leggendo i resti in ordine inverso: **$(11110110100)_2$**.
+**Il formato Fixed Point alloca uno spazio di memoria prestabilito di **$t+1$** bit per rappresentare i numeri interi**. **Formati standard in C/Python sono ***short* (**$16$** bit) o *long int* (**$32$** bit). Indichiamo con **$fi(N)$** la stringa memorizzata dal calcolatore per rappresentare $N$.
 
-### Algoritmo delle moltiplicazioni successive
+**Regole di Rappresentazione**:
 
-Serve per rappresentare un numero reale $\alpha \in [0, 1)$ in una base $\beta > 1$.
-Si tratta di moltiplicare il numero $\alpha$ per la base $\beta$ e prendere la parte intera del risultato come cifra successiva della rappresentazione. Si continua a moltiplicare la parte frazionaria ottenuta fino a quando non si ottiene una parte frazionaria nulla o si raggiunge un numero sufficiente di cifre.
+* **Se **$N \ge 0$**:** Si memorizzano esattamente le **$t+1$** cifre meno significative della sua rappresentazione binaria standard, compresi eventuali zeri a sinistra di riempimento.
+* **Se **$N < 0$**:** Si calcola la rappresentazione binaria del valore assoluto **$|N|$**, si prendono le **$t+1$** cifre meno significative, e si esegue il **Complemento a 2**.
+  * *Come fare il Complemento a 2:* Si scambiano tutti i bit (**$0 \rightarrow 1$** e **$1 \rightarrow 0$**) e poi si somma **$1$** (in aritmetica binaria).
 
-> **Esempio**: rappresentare il numero decimale **$(0.1)_{10}$** in base **$2$**.
->
-> 1. $0.1 \times 2 = 0.2$ (parte intera $0$, cifra più significativa)
-> 2. $0.2 \times 2 = 0.4$ (parte intera $0$, seconda cifra)
-> 3. $0.4 \times 2 = 0.8$ (parte intera $0$, terza cifra)
-> 4. $0.8 \times 2 = 1.6$ (parte intera $1$, quarta cifra)
-> 5. $0.6 \times 2 = 1.2$ (parte intera $1$, quinta cifra)
-> 6. $0.2 \times 2 = 0.4$ (parte intera $0$, sesta cifra)
->    ...
->    $0.1$ in base $2$ è rappresentato come **$(0.0001100110011\ldots)_2$**, un numero periodico.
+**Esempio (**$t+1 = 16$ bit): Rappresentare **$N = -1235$**.
 
-### Conversione di un numero reale da base 10 a base $\beta$
+1. Rappresentazione di **$|1235|$** su 16 bit: `0000010011010011`.
+2. Scambio bit: `1111101100101100`.
+3. Somma **$1$**: `1111101100101101`$\implies fi(-1235)$.
 
-Ogni numero reale si esprime come somma della sua **parte intera** e della sua **parte frazionaria**. Per effettuare la conversione si combinano gli algoritmi delle divisioni e delle moltiplicazioni successive.
+### Intervallo di Esatta Rappresentazione e Anomalie
 
-**Procedimento in 4 passi:**
+Per una determinata allocazione **$t+1$**, l'**intervallo di esatta rappresentazione** è compreso tra **$[-2^t, 2^t - 1]$**.
+**Se l'entità astratta esce da questo range, avviene una perdita di informazioni**:
 
-1. Determinare il valore assoluto $|\alpha|$ e memorizzare il **segno**.
-2. Isolare la **parte intera** $\lfloor|\alpha|\rfloor$ e convertirla utilizzando l'algoritmo delle *divisioni successive*.
-3. Isolare la **parte frazionaria** $|\alpha| - \lfloor|\alpha|\rfloor$ e convertirla utilizzando l'algoritmo delle *moltiplicazioni successive*.
-4. **Comporre il numero**: Scrivere il segno, seguito dalla parte intera convertita, il punto radice (la virgola), e infine la parte frazionaria convertita.
+* **Overflow intero:** Se il numero è troppo grande (**$N > 2^t - 1$**).
+* **Underflow intero:** Se il numero è troppo piccolo, ossia eccessivamente negativo (**$N < -2^t$**).
 
----
+> **NOTA BENE:** In entrambi i casi, il calcolatore applica ciecamente la regola, memorizzando *solo* i **$t+1$** bit meno significativi che ci stanno nello spazio allocato.
 
-**Esempio Pratico**
-Convertire $\alpha = -(25.375)_{10}$ in base $2$.
+### Aritmetica dei numeri Fixed Point
 
-1. **Valore assoluto e segno:** $|\alpha| = 25.375$  |  segno = `-`
-2. **Conversione parte intera (divisioni successive):** $\lfloor|\alpha|\rfloor = 25 \implies (25)_{10} = (11001)_2$
-3. **Conversione parte frazionaria (moltiplicazioni successive):** $|\alpha| - \lfloor|\alpha|\rfloor = 0.375 \implies (0.375)_{10} = (.011)_2$
-4. **Risultato finale:** $\alpha = -(11001.011)_2$
+Anche il risultato di un'operazione tra interi subisce le stesse regole di memoria. Il calcolatore fa l'operazione in binario standard, ma poi **"salva" solo i $t+1$ bit meno significativi**.
 
----
+**Esempi limite (Macchina con **$t+1 = 4$** bit, max **$7$**, min **$-8$**)**:
 
-## Rappresentazione in formato fixed point
-
-### Rappresentazione fixed point degli interi - virgola fissa
-
-Il formato **fixed point** dipende da un parametro $t$:
-
-- viene riservato in memoria uno spazio di $t+1$ bit (formati standard $t+1=16$ (short), $t+1=32$ (long int))
-- indichiamo con $fi(N)$ la stringa di cifre binarie ottenuta applicando le regole del formato all'intero $N$. 
-  $$
-  fi(N) = c_{t} c_{t-1} \ldots c_{1} c_{0}
-  $$
-- se $N\geq 0$: si memorizzano le $t+1$ cifre meno significative, $d_{t}, d_{t-1}, \ldots, d_{1}, d_{0}$, della sua rappresentazione binaria (eventuali zeri a sinistra compresi)
-- se $N<0$: si prendono le $t+1$ cifre meno significative, $d_{t}, d_{t-1}, \ldots, d_{1}, d_{0}$, della rappresentazione binaria di $|N|$ (eventuali zeri a sinistra compresi) e si calcola la rappresentazione in **complemento a 2**.
-
----
-
-**Esempi ($t+1=16$)**:
-
-- $N = 1235 = (10011010011)_2$ &rArr; $fi(N) = (0000010011010011)_2$ (registrazione in memoria)
-- $N = -1235 = -(10011010011)_2$ &rArr; $fi(N) = (1111101100101101)_2$ (registrazione in memoria)
-  1. Rappresentazione binaria di $|N|$: $(0000010011010011)_2$
-  2. Scambio dei bit: $(1111101100101100)_2$
-  3. Aggiunta di 1: $(1111101100101101)_2$
-
----
-
-**Vedere SLIDE 38** - Errori di rappresentazione
-Per un generico t l'intervallo di numeri rappresentabili è $[-2^t, 2^t - 1]$. Se $N$ è al di fuori di questo intervallo, si verifica un **overflow** (il numero non può essere rappresentato correttamente in memoria). In questo caso, il calcolatore memorizza solo le cifre meno significative, causando un errore di rappresentazione.
-
-> **Esempi** con $t+1=4$:
->
-> - $N=-9$ &rArr; $fi(N) = (0111)_2$ (registrazione in memoria, ma rappresenta $7$ invece di $-9$)
-> - $N=23$ &rArr; $fi(N) = (0111)_2$ (registrazione in memoria, ma rappresenta $7$ invece di $23$)
-> - $N=-25$ &rArr; $fi(N) = (0111)_2$ (registrazione in memoria, ma rappresenta $7$ invece di $-25$)
-
-Regola: Si prendono sempre le $t+1$ cifre meno significative della rappresentazione binaria del numero, se è positivo, o della sua rappresentazione in complemento a 2, se è negativo.
-
-- Il caso in cui la perdita di informazione si ha nella rappresentazione di un *intero troppo piccolo*, ossia $N < -2^t$, è detto **underflow intero** (es. $-9, 25$ con $t+1=4$)
-- Il caso in cui la perdita di informazione si ha nella rappresentazione di un *intero troppo grande*, ossia $N > 2^t - 1$, è detto **overflow intero** (es. $23$ con $t+1=4$)
-- L'intervallo $[-2^t, 2^t-1]$ è chiamato **intervallo di esatta rappresentazione degli interi** (es. $[-8, 7]$ con $t+1=4$)
-
----
+* **Somma in Overflow (**$7 + 4$**)**:
+  **$7$** in binario è **$(0111)_2$** e **$4$** è **$(0100)_2$**.
+  **$0111 + 0100 = (1011)_2 = 11$** decimale.
+  Il calcolatore memorizza **$1011$**. Tuttavia, poiché il primo bit a sinistra è **$1$**, per la macchina in complemento a due esso rappresenta **$-5$**.
+  Dunque, al calcolatore,  **$7 + 4 = -5$** .
+* **Moltiplicazione in Overflow (**$7 \times 3$**)**:
+  **$21$** in decimale corrisponde a **$(10101)_2$** in binario.
+  Dovendo tagliare a 4 bit, si prendono i meno significativi: si "scarta" l'1 iniziale, tenendo solo.
+  Dunque, per il calcolatore, $7 \times 3 = 5$.
